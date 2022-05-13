@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://gist.lipsum.app/output -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+            const head = document.getElementsByTagName("head")[0];
+
+            let _code = "";
+
+            let files_to_load = new Map();
+
+            function runCode() {
+                const newScript = document.createElement("script");
+
+                newScript.type = "text/javascript";
+                newScript.innerHTML =
+                    "try {new Function(_code)();} catch (error) {console.error(error);}";
+
+                document.body.appendChild(newScript);
+
+                _code = null;
+            }
+
+            function runIfAllLoaded() {
+                if (![...files_to_load.values()].includes(0) && _code) {
+                    runCode();
+                }
+            }
+
+            function setHtml(html) {
+                document.body.innerHTML = html;
+            }
+
+            function setCss(css) {
+                document.getElementById("_style").innerHTML = css;
+            }
+
+            function addCss(link) {
+                if (files_to_load.has(link)) {
+                    runIfAllLoaded();
+
+                    return;
+                }
+
+                files_to_load.set(link, 0);
+
+                const newLink = document.createElement("link");
+
+                newLink.type = "text/css";
+                newLink.rel = "stylesheet";
+                
+
+                newLink.onload = () => {
+                    files_to_load.set(link, 1);
+
+                    runIfAllLoaded();
+                };
+
+                newLink.href = link;
+                head.insertBefore(newLink, document.getElementById("_style"));
+            }
+
+            function addJs(src) {
+                if (files_to_load.has(src)) {
+                    runIfAllLoaded();
+
+                    return;
+                }
+
+                files_to_load.set(src, 0);
+
+                const newScript = document.createElement("script");
+
+                newScript.type = "text/javascript";
+                newScript.onload = () => {
+                    files_to_load.set(src, 1);
+
+                    runIfAllLoaded();
+                };
+
+                newScript.src = src;
+                head.insertBefore(newScript, document.getElementById("_style"));
+            }
+
+            function getUrlExtension(url) {
+                return url.split(/[#?]/)[0].split(".").pop().trim();
+            }
+
+            function isObject(obj) {
+                return obj != null && obj.constructor.name === "Object";
+            }
+
+            function addResources(resources) {
+                const files = {
+                    js: [],
+                    css: [],
+                };
+
+                resources.map((file) => {
+                    const ext = getUrlExtension(file);
+
+                    if (ext === "js" || ext === "css") {
+                        files[ext].push(file);
+                    }
+                });
+
+                files.js.map((file) => addJs(file));
+                files.css.map((file) => addCss(file));
+            }
+
+            window.addEventListener("message", (e) => {
+                if (!e.data || !isObject(e.data)) return;
+
+                if ('click' in e.data) {
+                    document.querySelector('[data-fancybox]').click();
+                }
+
+                if ("js" in e.data) {
+                    _code = e.data.js;
+                }
+
+                if ("resources" in e.data) {
+                    addResources(e.data.resources || []);
+                }
+
+                if ("html" in e.data) {
+                    setHtml(e.data.html);
+                }
+
+                if ("css" in e.data) {
+                    setCss(e.data.css);
+                }
+            });
+        </script>
+        <script type="text/javascript" src="./fancybox.umd.js"></script><link type="text/css" rel="stylesheet" href="./panzoom.css"><link type="text/css" rel="stylesheet" href="./fancybox.css"><link type="text/css" rel="stylesheet" href="./tailwind.min.css"><style id="_style">a[data-fancybox] img {
+  cursor: zoom-in;
+}
+
+.fancybox__backdrop::after {
+  content: "";
+  position: absolute;
+  width: 10%;
+  height: 10%;
+  filter: blur(2px);
+  left: 50%;
+  top: 50%;
+  transform: scale(11);
+  opacity: 0.3;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.fancybox__container {
+  --fancybox-bg: #000;
+
+  --fancybox-thumbs-width: 48px;
+  --fancybox-thumbs-ratio: 1;
+
+  --carousel-button-bg: rgb(91 78 76 / 74%);
+
+  --carousel-button-svg-width: 24px;
+  --carousel-button-svg-height: 24px;
+
+  --carousel-button-svg-stroke-width: 2.5;
+}
+
+.fancybox__nav {
+  --carousel-button-svg-width: 24px;
+  --carousel-button-svg-height: 24px;
+}
+
+.fancybox__nav .carousel__button.is-prev {
+  left: 20px;
+}
+
+.fancybox__nav .carousel__button.is-next {
+  right: 20px;
+}
+
+.carousel__button.is-close {
+  right: auto;
+  top: 20px;
+  left: 20px;
+}
+
+.fancybox__slide {
+  padding: 8px 88px;
+}
+
+/* Thumbnails */
+.fancybox__thumbs .carousel__slide {
+  padding: 8px 8px 16px 8px;
+}
+
+.is-nav-selected::after {
+  display: none;
+}
+
+.fancybox__thumb {
+  border-radius: 6px;
+  opacity: 0.4;
+}
+
+.fancybox__thumb:hover,
+.is-nav-selected .fancybox__thumb {
+  border-radius: 6px;
+  opacity: 1;
+}
+
+.is-nav-selected .fancybox__thumb::after {
+  display: none;
+}</style>
+    </head>
+    <body><h1 class="mt-12 mb-8 px-6 text-center text-lg md:text-2xl font-semibold">
+  Facebook inspired design, customized background
+</h1>
+
+<div class="flex flex-wrap gap-5 justify-center max-w-5xl mx-auto px-6">
+  <a data-fancybox="gallery" href="https://lipsum.app/id/46/1600x1200">
+    <img class="rounded" src="./200x150">
+  </a>
+  <a data-fancybox="gallery" href="https://lipsum.app/id/47/1600x1200">
+    <img class="rounded" src="./200x150(1)">
+  </a>
+  <a data-fancybox="gallery" href="https://lipsum.app/id/51/1600x1200">
+    <img class="rounded" src="./200x150(2)">
+  </a>
+</div><script type="text/javascript">try {new Function(_code)();} catch (error) {console.error(error);}</script></body></html>
